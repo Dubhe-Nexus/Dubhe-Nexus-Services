@@ -10,7 +10,7 @@ const text: Record<Locale, any> = {
     subtitle: '天枢互联一站式服务平台，为您提供专业的航空信息与社区支持。',
     sectionData: '数据服务',
     cards: {
-      weatherTitle: '气象查询',
+      weatherTitle: '气象数据查询',
       weatherDesc: '在同一页面展示 METAR 与 TAF，并提供结构化解码结果。',
       infoTitle: '机场数据',
       infoDesc: '提供全球机场的详细数据，包括跑道信息、通信频率、导航设施等。',

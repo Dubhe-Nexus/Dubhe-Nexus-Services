@@ -5,7 +5,7 @@ type Locale = 'zh' | 'en';
 
 const messages: Record<Locale, any> = {
   zh: {
-    title: '气象查询',
+    title: '气象数据查询',
     desc: '同一页面展示 METAR 与 TAF，并提供结构化解码结果。支持 ICAO / IATA 代码查询。',
     chips: ['METAR', 'TAF'],
     placeholder: '输入 ICAO / IATA 代码',
@@ -29,6 +29,7 @@ const messages: Record<Locale, any> = {
       none: '—',
       noSigWx: '无显著天气',
       back: '返回服务中心',
+      refreshedAt: '刷新时间',
       vrb: '不定向'
     },
     errors: {
@@ -65,6 +66,7 @@ const messages: Record<Locale, any> = {
       none: '—',
       noSigWx: 'No significant weather',
       back: 'Back to Service Center',
+      refreshedAt: 'Refreshed',
       vrb: 'Variable'
     },
     errors: {
@@ -300,6 +302,7 @@ export const WeatherView = ({ locale = 'zh' }: { locale?: Locale }) => {
   const [error, setError] = useState<string | null>(null);
   const [metar, setMetar] = useState<any | null>(null);
   const [taf, setTaf] = useState<any | null>(null);
+  const [refreshedAt, setRefreshedAt] = useState<Date | null>(null);
 
   const airportTitle = useMemo(() => {
     const name = metar?.name || taf?.name || '';
@@ -326,11 +329,13 @@ export const WeatherView = ({ locale = 'zh' }: { locale?: Locale }) => {
       ]);
 
       const errors: string[] = [];
+      const anyOk = m.status === 'fulfilled' || t.status === 'fulfilled';
       if (m.status === 'fulfilled') setMetar(m.value?.metar ?? null);
       else errors.push(m.reason?.message || msg.errors.metarFailed);
       if (t.status === 'fulfilled') setTaf(t.value?.taf ?? null);
       else errors.push(t.reason?.message || msg.errors.tafFailed);
 
+      if (anyOk) setRefreshedAt(new Date());
       if (errors.length === 2) {
         setError(errors.join(' / '));
       }
@@ -366,6 +371,10 @@ export const WeatherView = ({ locale = 'zh' }: { locale?: Locale }) => {
       return `${left}${baseFt ? ` ${baseFt}` : ''}`.trim();
     });
   }, [metar?.clouds, locale]);
+
+  const refreshedAtText = useMemo(() => {
+    return refreshedAt ? formatUtc(refreshedAt) : null;
+  }, [refreshedAt]);
 
   return (
     <main className="mx-auto max-w-[1600px] px-4 py-12 sm:px-6 lg:px-10 font-sans">
@@ -416,6 +425,12 @@ export const WeatherView = ({ locale = 'zh' }: { locale?: Locale }) => {
                 <Search size={20} />
               </button>
             </form>
+
+            <div className="mt-3 flex items-center gap-2 text-xs text-gray-500 font-light">
+              <Clock size={14} strokeWidth={1.5} />
+              <span className="tracking-widest uppercase">{msg.text.refreshedAt}</span>
+              <span className="text-gray-700">{refreshedAtText || msg.text.none}</span>
+            </div>
 
             <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="p-5 border border-gray-100 rounded-xl bg-white/60">
