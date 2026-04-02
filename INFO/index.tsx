@@ -368,6 +368,23 @@ export default function InfoQuery({ locale = 'zh' }: { locale?: Locale }) {
               )}
             </div>
           </section>
+
+          <section className="border border-gray-100 rounded-2xl overflow-hidden bg-white">
+            <div className="px-8 py-7 md:px-12 border-b border-gray-50">
+              <div className="text-[10px] tracking-widest uppercase text-gray-400">{locale === 'en' ? 'CHARTS' : '航图'}</div>
+              <div className="mt-2 text-xl md:text-2xl font-light text-gray-900">{locale === 'en' ? 'Latest Airport Charts' : '最近机场航图'}</div>
+            </div>
+            <div className="p-7 md:p-10">
+              <div className="border border-gray-100 rounded-2xl overflow-hidden bg-white">
+                <iframe
+                  title="Charts"
+                  src={`https://portal.skylitefly.com/charts?icao=${encodeURIComponent(airportTitle.icaoId || '')}&embedding=1`}
+                  style={{ width: '100%', height: '860px', border: 0 }}
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </section>
         </div>
       )}
     </main>
