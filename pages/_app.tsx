@@ -17,7 +17,7 @@ const navText: Record<Locale, any> = {
   en: {
     brand: 'Dubhe Nexus',
     nav: [],
-    switchTo: '中文'
+    switchTo: '中'
   }
 };
 
@@ -94,9 +94,6 @@ const Footer = ({ locale }: { locale: Locale }) => {
         <div className="footer-copyright">
           <div style={{ flex: 1, textAlign: 'left' }}>
             &copy; {year} Dubhe Nexus Innovation and Research Studio
-            <div style={{ marginTop: 5 }}>
-              Licensed under <a href="/license.html" style={{ color: '#444', fontWeight: 500 }}>MIT</a>
-            </div>
           </div>
 
           <div style={{ flex: 1, textAlign: 'right' }}>
