@@ -44,7 +44,6 @@ const ServiceCenter = ({ locale = 'zh' }: { locale?: Locale }) => {
   const t = text[locale];
   const weatherHref = locale === 'en' ? '/en/weather' : '/weather';
   const infoHref = locale === 'en' ? '/en/info' : '/info';
-  const chartsHref = locale === 'en' ? '/en/charts' : '/charts';
 
   const pilotServices = [
     {
@@ -69,8 +68,8 @@ const ServiceCenter = ({ locale = 'zh' }: { locale?: Locale }) => {
       icon: Map,
       color: 'orange',
       description: t.cards.chartsDesc,
-      href: chartsHref,
-      status: 'available'
+      href: '#',
+      status: 'coming_soon'
     }
   ];
 
