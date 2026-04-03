@@ -118,7 +118,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <div className="min-h-screen bg-white text-gray-900 flex flex-col">
       <Head>
-        <link rel="icon" type="image/jpeg" href="/images/Dubhe Nexus 1.1.svg" />
+        <link rel="icon" type="image/jpeg" href="https://www.dubhenexus.org/images/Dubhe%20Nexus%201.1.svg" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,200;14..32,300;14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet" />

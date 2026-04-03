@@ -38,6 +38,7 @@ const messages: Record<Locale, any> = {
       tafNotFound: '未找到该机场的 TAF 数据',
       metarFailed: 'METAR 获取失败',
       tafFailed: 'TAF 获取失败',
+      serverError: '数据请求失败，请稍后再试',
       requestFailed: '请求失败'
     }
   },
@@ -75,6 +76,7 @@ const messages: Record<Locale, any> = {
       tafNotFound: 'TAF not found',
       metarFailed: 'Failed to fetch METAR',
       tafFailed: 'Failed to fetch TAF',
+      serverError: 'Request failed, please try again later',
       requestFailed: 'Request failed'
     }
   }
@@ -323,9 +325,15 @@ export const WeatherView = ({ locale = 'zh' }: { locale?: Locale }) => {
     setMetar(null);
     setTaf(null);
     try {
+      const fetchJson = async (url: string, notFoundMessage: string) => {
+        const r = await fetch(url);
+        if (r.ok) return r.json();
+        if (r.status >= 500) throw new Error(msg.errors.serverError);
+        throw new Error(notFoundMessage);
+      };
       const [m, t] = await Promise.allSettled([
-        fetch(`/api/airports/metar/${code}`).then(r => (r.ok ? r.json() : Promise.reject(new Error(msg.errors.metarNotFound)))),
-        fetch(`/api/airports/taf/${code}`).then(r => (r.ok ? r.json() : Promise.reject(new Error(msg.errors.tafNotFound))))
+        fetchJson(`/api/airports/metar/${code}`, msg.errors.metarNotFound),
+        fetchJson(`/api/airports/taf/${code}`, msg.errors.tafNotFound)
       ]);
 
       const errors: string[] = [];

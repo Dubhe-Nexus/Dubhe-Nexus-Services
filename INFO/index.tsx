@@ -12,6 +12,7 @@ const text: Record<Locale, any> = {
     loading: '正在获取数据...',
     invalid: '请输入有效的 ICAO(4) 或 IATA(3) 代码',
     notFound: '未找到该机场的基础数据',
+    serverError: '数据请求失败，请稍后再试',
     requestFailed: '请求失败',
     sections: {
       airport: '机场',
@@ -43,6 +44,7 @@ const text: Record<Locale, any> = {
     loading: 'Loading...',
     invalid: 'Please enter a valid ICAO (4) or IATA (3) code',
     notFound: 'Airport not found',
+    serverError: 'Request failed, please try again later',
     requestFailed: 'Request failed',
     sections: {
       airport: 'Airport',
@@ -168,6 +170,7 @@ export default function InfoQuery({ locale = 'zh' }: { locale?: Locale }) {
       const response = await fetch(`/api/airports/${q}`);
       const payload = await response.json().catch(() => null);
       if (!response.ok) {
+        if (response.status >= 500) throw new Error(t.serverError);
         throw new Error(payload?.error || t.notFound);
       }
       setResult(payload);
