@@ -1,5 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Info, Search, Clock } from 'lucide-react';
+import { useRouter } from 'next/router';
 
 type Locale = 'zh' | 'en';
 
@@ -88,12 +89,14 @@ const formatDmsPair = (lat: any, lon: any) => {
 };
 
 export const InfoView = ({ locale = 'zh' }: { locale?: Locale }) => {
+  const router = useRouter();
   const msg = messages[locale];
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<any | null>(null);
   const [refreshedAt, setRefreshedAt] = useState<Date | null>(null);
+  const autoLoadedCodeRef = useRef<string | null>(null);
 
   const refreshedAtText = useMemo(() => {
     if (!refreshedAt) return '';
@@ -105,9 +108,8 @@ export const InfoView = ({ locale = 'zh' }: { locale?: Locale }) => {
   const airport = data?.data || null;
   const posDms = useMemo(() => formatDmsPair(airport?.lat, airport?.lon), [airport?.lat, airport?.lon]);
 
-  const onSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const q = code.trim().toUpperCase();
+  const runSearch = useCallback(async (rawCode: string) => {
+    const q = rawCode.trim().toUpperCase();
     if (!q || (q.length !== 3 && q.length !== 4)) {
       setError(msg.errors.invalid);
       return;
@@ -130,7 +132,27 @@ export const InfoView = ({ locale = 'zh' }: { locale?: Locale }) => {
     } finally {
       setLoading(false);
     }
+  }, [msg.errors.invalid, msg.errors.notFound, msg.errors.requestFailed, msg.errors.serverError]);
+
+  const onSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await runSearch(code);
   };
+
+  useEffect(() => {
+    if (!router.isReady) return;
+    const queryIcao = router.query?.icao;
+    const raw = Array.isArray(queryIcao) ? queryIcao[0] : queryIcao;
+    if (!raw) return;
+
+    const normalized = String(raw).trim().toUpperCase();
+    if (normalized.length !== 3 && normalized.length !== 4) return;
+
+    setCode(normalized);
+    if (autoLoadedCodeRef.current === normalized) return;
+    autoLoadedCodeRef.current = normalized;
+    void runSearch(normalized);
+  }, [router.isReady, router.query, runSearch]);
 
   return (
     <main className="mx-auto max-w-[1600px] px-4 py-12 sm:px-6 lg:px-10 font-sans">
