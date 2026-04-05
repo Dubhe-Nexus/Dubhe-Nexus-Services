@@ -109,6 +109,29 @@ const Footer = ({ locale }: { locale: Locale }) => {
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const locale: Locale = router.pathname.startsWith('/en') ? 'en' : 'zh';
+  const [hasHydrated, setHasHydrated] = useState(false);
+  const isEmbed = useMemo(() => {
+    const path = router.pathname || '';
+    const isTargetPage =
+      path === '/weather' || path === '/info' || path === '/en/weather' || path === '/en/info';
+    if (!isTargetPage) return false;
+
+    const queryValue = router.query?.embed;
+    if (typeof queryValue === 'string') return queryValue.toLowerCase() === 'true';
+    if (Array.isArray(queryValue)) return queryValue.some((v) => String(v).toLowerCase() === 'true');
+
+    const asPath = router.asPath || '';
+    const qIndex = asPath.indexOf('?');
+    if (qIndex < 0) return false;
+    const params = new URLSearchParams(asPath.slice(qIndex + 1));
+    return (params.get('embed') || '').toLowerCase() === 'true';
+  }, [router.pathname, router.query, router.asPath]);
+
+  useEffect(() => {
+    setHasHydrated(true);
+  }, []);
+
+  const hideChrome = hasHydrated && isEmbed;
 
   useEffect(() => {
     const w = window as any;
@@ -133,11 +156,11 @@ export default function App({ Component, pageProps }: AppProps) {
           if (w?.lucide?.createIcons) w.lucide.createIcons();
         }}
       />
-      <Navbar locale={locale} pathname={router.asPath || router.pathname} />
-      <div style={{ paddingTop: 110, flex: 1 }}>
+      {!hideChrome && <Navbar locale={locale} pathname={router.asPath || router.pathname} />}
+      <div style={{ paddingTop: hideChrome ? 0 : 110, flex: 1 }}>
         <Component {...pageProps} />
       </div>
-      <Footer locale={locale} />
+      {!hideChrome && <Footer locale={locale} />}
     </div>
   );
 }

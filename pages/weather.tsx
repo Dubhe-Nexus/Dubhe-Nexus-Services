@@ -1,5 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Cloud, CloudSun, Search, Wind, Eye, Thermometer, Gauge, Clock, List } from 'lucide-react';
+import { useRouter } from 'next/router';
 
 type Locale = 'zh' | 'en';
 
@@ -298,6 +299,7 @@ const formatQnh = (altim: any) => {
 };
 
 export const WeatherView = ({ locale = 'zh' }: { locale?: Locale }) => {
+  const router = useRouter();
   const msg = messages[locale];
   const [icao, setIcao] = useState('');
   const [loading, setLoading] = useState(false);
@@ -305,6 +307,7 @@ export const WeatherView = ({ locale = 'zh' }: { locale?: Locale }) => {
   const [metar, setMetar] = useState<any | null>(null);
   const [taf, setTaf] = useState<any | null>(null);
   const [refreshedAt, setRefreshedAt] = useState<Date | null>(null);
+  const autoLoadedCodeRef = useRef<string | null>(null);
 
   const airportTitle = useMemo(() => {
     const name = metar?.name || taf?.name || '';
@@ -313,9 +316,8 @@ export const WeatherView = ({ locale = 'zh' }: { locale?: Locale }) => {
     return { name, iata, icaoId };
   }, [metar, taf]);
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const code = icao.trim().toUpperCase();
+  const runSearch = useCallback(async (rawCode: string) => {
+    const code = rawCode.trim().toUpperCase();
     if (!code || (code.length !== 3 && code.length !== 4)) {
       setError(msg.errors.invalidIcao);
       return;
@@ -352,7 +354,27 @@ export const WeatherView = ({ locale = 'zh' }: { locale?: Locale }) => {
     } finally {
       setLoading(false);
     }
+  }, [msg.errors.invalidIcao, msg.errors.metarNotFound, msg.errors.tafNotFound, msg.errors.serverError, msg.errors.metarFailed, msg.errors.tafFailed, msg.errors.requestFailed]);
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await runSearch(icao);
   };
+
+  useEffect(() => {
+    if (!router.isReady) return;
+    const queryIcao = router.query?.icao;
+    const raw = Array.isArray(queryIcao) ? queryIcao[0] : queryIcao;
+    if (!raw) return;
+
+    const normalized = String(raw).trim().toUpperCase();
+    if (normalized.length !== 3 && normalized.length !== 4) return;
+
+    setIcao(normalized);
+    if (autoLoadedCodeRef.current === normalized) return;
+    autoLoadedCodeRef.current = normalized;
+    void runSearch(normalized);
+  }, [router.isReady, router.query, runSearch]);
 
   const obsTimeText = useMemo(() => {
     const d = toDate(metar?.obsTime);
