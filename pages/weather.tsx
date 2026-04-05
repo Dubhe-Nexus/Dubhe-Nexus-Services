@@ -11,7 +11,7 @@ const messages: Record<Locale, any> = {
     placeholder: '输入 ICAO / IATA 代码',
     labels: {
       airport: '机场',
-      metarTime: 'METAR 时间',
+      metarTime: 'METAR 发布时间',
       tafIssue: 'TAF 发布时间',
       metarRealtime: '航空例行天气报告',
       tafForecast: '终端机场天气预报',

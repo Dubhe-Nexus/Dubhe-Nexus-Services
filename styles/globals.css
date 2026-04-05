@@ -82,8 +82,8 @@ body {
 }
 
 .logo img {
-  height: 45px;
-  width: auto;
+  width: 205px;
+  height: 40px;
   object-fit: contain;
   border-radius: 3px;
 }

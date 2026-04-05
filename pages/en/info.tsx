@@ -1,5 +1,5 @@
-import InfoQuery from '../../INFO/index';
+import { InfoView } from '../info';
 
 export default function Page() {
-  return <InfoQuery locale="en" />;
+  return <InfoView locale="en" />;
 }
