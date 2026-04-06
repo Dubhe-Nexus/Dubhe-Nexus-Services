@@ -1,7 +1,6 @@
 const config = {
   async rewrites() {
-    const bffPort = process.env.BFF_PORT || "3001";
-    const apiBase = (process.env.API_BASE || "https://api.dubhenexus.org").replace(/\/$/, "");
+    const apiBase = "https://data.dubhenexus.org/api";
     return [
       {
         source: "/api/airports/:path*",
