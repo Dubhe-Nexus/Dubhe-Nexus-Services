@@ -109,7 +109,7 @@ const cloudCoverName = (locale: Locale, cover: string) => {
     FEW: '少云',
     SCT: '疏云',
     BKN: '多云',
-    OVC: '阴云'
+    OVC: '阴天'
   };
   const en: Record<string, string> = {
     CLR: 'Clear',
@@ -131,6 +131,12 @@ const formatCloudBaseFt = (value: any) => {
   if (/ft\b/i.test(raw)) return raw;
   if (/^\d+$/.test(raw)) return `${raw} ft`;
   return raw;
+};
+
+const cloudBaseText = (locale: Locale, value: any) => {
+  const baseFt = formatCloudBaseFt(value);
+  if (!baseFt) return null;
+  return locale === 'en' ? `Cloud base ${baseFt}` : `云底高度 ${baseFt}`;
 };
 
 const wrapDesc = (locale: Locale, text: string, desc: string) => {
@@ -397,8 +403,8 @@ export const WeatherView = ({ locale = 'zh' }: { locale?: Locale }) => {
       const cover = String(c.cover || '').toUpperCase();
       const coverDesc = cover ? cloudCoverName(locale, cover) : null;
       const left = coverDesc ? wrapDesc(locale, cover, coverDesc) : cover;
-      const baseFt = formatCloudBaseFt(c.base);
-      return `${left}${baseFt ? ` ${baseFt}` : ''}`.trim();
+      const baseText = cloudBaseText(locale, c.base);
+      return `${left}${baseText ? ` (${baseText})` : ''}`.trim();
     });
   }, [metar?.clouds, locale]);
 
@@ -610,10 +616,10 @@ export const WeatherView = ({ locale = 'zh' }: { locale?: Locale }) => {
                     const cloudsLines = Array.isArray(fcst?.clouds) && fcst.clouds.length
                       ? fcst.clouds.map((c: any) => {
                         const cover = String(c.cover || '').toUpperCase();
-                        const baseFt = formatCloudBaseFt(c.base);
+                        const baseText = cloudBaseText(locale, c.base);
                         const coverDesc = cover ? cloudCoverName(locale, cover) : null;
                         const left = coverDesc ? wrapDesc(locale, cover, coverDesc) : cover;
-                        return `${left}${baseFt ? ` ${baseFt}` : ''}`.trim();
+                        return `${left}${baseText ? ` (${baseText})` : ''}`.trim();
                       })
                       : null;
                     const segmentCards = [
