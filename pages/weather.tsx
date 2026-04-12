@@ -100,6 +100,17 @@ const formatUtc = (d: Date) => {
   return `${pad2(d.getUTCDate())}/${pad2(d.getUTCMonth() + 1)}/${d.getUTCFullYear()} UTC ${pad2(d.getUTCHours())}:${pad2(d.getUTCMinutes())}:${pad2(d.getUTCSeconds())}`;
 };
 
+const formatVisibility = (locale: Locale, value: any) => {
+  if (!value) return null;
+  const raw = String(value).trim();
+  if (!raw) return null;
+  // 9999 means "greater than 10 km"
+  if (raw === '9999' || raw === '9999m') {
+    return locale === 'en' ? '>10KM' : '大于10公里';
+  }
+  return raw;
+};
+
 const cloudCoverName = (locale: Locale, cover: string) => {
   const key = String(cover || '').toUpperCase();
   const zh: Record<string, string> = {
@@ -549,7 +560,7 @@ export const WeatherView = ({ locale = 'zh' }: { locale?: Locale }) => {
                       <Eye size={16} strokeWidth={1.5} />
                       <span className="text-[10px] tracking-widest uppercase">{msg.labels.visibility}</span>
                     </div>
-                    <div className="text-lg font-medium text-gray-900">{metar.visib}</div>
+                    <div className="text-lg font-medium text-gray-900">{formatVisibility(locale, metar.visib)}</div>
                   </div>
                 ) : null}
                 <div className="p-5 border border-gray-100 rounded-xl">
@@ -624,7 +635,7 @@ export const WeatherView = ({ locale = 'zh' }: { locale?: Locale }) => {
                       : null;
                     const segmentCards = [
                       { key: 'wind', label: msg.labels.wind, value: windText, show: hasWind },
-                      { key: 'visib', label: msg.labels.visibility, value: fcst?.visib, show: !!fcst?.visib },
+                      { key: 'visib', label: msg.labels.visibility, value: formatVisibility(locale, fcst?.visib), show: !!fcst?.visib },
                       {
                         key: 'clouds',
                         label: msg.labels.clouds,
