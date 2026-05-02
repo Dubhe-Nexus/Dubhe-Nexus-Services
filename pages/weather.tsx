@@ -104,9 +104,8 @@ const formatVisibility = (locale: Locale, value: any) => {
   if (!value) return null;
   const raw = String(value).trim();
   if (!raw) return null;
-  // 9999 means "greater than 10 km"
   if (raw === '9999' || raw === '9999m') {
-    return locale === 'en' ? '>10KM' : '大于10公里';
+    return '>10 KM';
   }
   return raw;
 };
