@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+export const runtime = 'edge';
+
 const CAD_ATIS_URL = 'https://atis.cad.gov.hk/ATIS/ATISweb/atis.php';
 
 function extractText(html: string, className: string): string | null {

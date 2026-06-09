@@ -241,7 +241,7 @@ export const InfoView = ({ locale = 'zh' }: { locale?: Locale }) => {
                 </div>
                 <div className="p-5 border border-gray-100 rounded-xl">
                   <div className="text-[10px] tracking-widest uppercase text-gray-400 mb-2">{msg.labels.elevation}</div>
-                  <div className="text-sm text-gray-900 font-medium">{airport?.elev != null ? `${airport.elev} ft` : msg.text.none}</div>
+                  <div className="text-sm text-gray-900 font-medium">{airport?.elev != null ? `${airport.elev} m` : msg.text.none}</div>
                 </div>
                 <div className="p-5 border border-gray-100 rounded-xl">
                   <div className="text-[10px] tracking-widest uppercase text-gray-400 mb-2">{msg.labels.country}</div>

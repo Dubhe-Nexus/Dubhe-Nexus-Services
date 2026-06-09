@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+export const runtime = 'edge';
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -17,8 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (!tokenValue) {
       return res.status(500).json({
-        error: 'Missing ChartFox token',
-        message: '请在服务端环境变量中配置 CHARTFOX_TOKEN（使用 ChartFox 后台 Tokens 区域那段以 eyJ 开头的 Token）。'
+        error: 'Missing ChartFox token'
       });
     }
 
