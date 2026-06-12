@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+export const runtime = 'edge';
+
 const FAA_NOTAM_URL = 'https://notams.aim.faa.gov/notamSearch/search';
 
 interface NOTAM {
