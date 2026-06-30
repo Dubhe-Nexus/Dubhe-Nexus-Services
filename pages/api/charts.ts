@@ -1,8 +1,3 @@
-/**
- * ChartFox 嵌入式航图接口代理
- * 302 重定向到 ChartFox embed 接口，iframe 直接从 api.chartfox.org 加载
- * Token 仅出现在服务端 302 响应 Location 头中
- */
 export const runtime = 'edge';
 
 export default async function handler(req: Request): Promise<Response> {
@@ -38,7 +33,6 @@ export default async function handler(req: Request): Promise<Response> {
     });
   }
 
-  // 与 chart.js 完全一致的调用方式
   const chartfoxUrl = `https://api.chartfox.org/v2/interfaces/airport/${airport}?token=${encodeURIComponent(token)}&darkMode=true`;
 
   return Response.redirect(chartfoxUrl, 302);
