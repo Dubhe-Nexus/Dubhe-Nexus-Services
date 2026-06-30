@@ -1,34 +1,45 @@
-  import type { NextApiRequest, NextApiResponse } from 'next';
-
 /**
  * ChartFox 嵌入式航图接口代理
- * 参照 chart.js 的调用方式：将 iframe 重定向到 ChartFox embed 接口
- * iframe 直接从 api.chartfox.org 加载，相对路径自动正确解析
+ * 302 重定向到 ChartFox embed 接口，iframe 直接从 api.chartfox.org 加载
+ * Token 仅出现在服务端 302 响应 Location 头中
  */
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export const runtime = 'edge';
+
+export default async function handler(req: Request): Promise<Response> {
   if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
-  const icao = req.query.icao;
-  if (!icao || typeof icao !== 'string') {
-    return res.status(400).json({ error: 'ICAO code required' });
+  const url = new URL(req.url);
+  const icao = url.searchParams.get('icao');
+  if (!icao) {
+    return new Response(JSON.stringify({ error: 'ICAO code required' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
   const airport = icao.trim().toUpperCase();
   if (airport.length !== 4 || !/^[A-Z]{4}$/.test(airport)) {
-    return res.status(400).json({ error: 'Invalid ICAO code (4-letter)' });
+    return new Response(JSON.stringify({ error: 'Invalid ICAO code (4-letter)' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
   const token = process.env.CHARTFOX_PAT;
   if (!token) {
-    return res.status(500).json({ error: 'CHARTFOX_PAT not configured' });
+    return new Response(JSON.stringify({ error: 'CHARTFOX_PAT not configured' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
-  // 与 chart.js 完全一致的调用方式：?token= 传在 URL 上
+  // 与 chart.js 完全一致的调用方式
   const chartfoxUrl = `https://api.chartfox.org/v2/interfaces/airport/${airport}?token=${encodeURIComponent(token)}&darkMode=true`;
 
-  // 302 重定向：iframe 最终从 api.chartfox.org 直接加载
-  // HTML 内的相对路径、API 调用全部正确解析
-  res.redirect(302, chartfoxUrl);
+  return Response.redirect(chartfoxUrl, 302);
 }
