@@ -21,7 +21,7 @@ const messages: Record<Locale, any> = {
       openExternal: '在 ChartFox 打开',
     },
     errors: {
-      invalidIcao: '请输入有效的 ICAO 或 IATA 代码',
+      invalidIcao: '请输入有效的 ICAO 代码',
     }
   },
   en: {
@@ -40,7 +40,7 @@ const messages: Record<Locale, any> = {
       openExternal: 'Open on ChartFox',
     },
     errors: {
-      invalidIcao: 'Please enter a valid ICAO or IATA code',
+      invalidIcao: 'Please enter a valid ICAO code',
     }
   }
 };
