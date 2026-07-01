@@ -8,7 +8,7 @@ const messages: Record<Locale, any> = {
   zh: {
     title: '航图查询',
     desc: '查询全球机场的航图、SID/STAR、进近图等飞行程序图表。（由 ChartFox 提供）',
-    placeholder: '输入 ICAO / IATA 代码',
+    placeholder: '输入 ICAO 代码',
     labels: {
       airport: '机场',
       charts: '可用航图',
@@ -27,7 +27,7 @@ const messages: Record<Locale, any> = {
   en: {
     title: 'Charts',
     desc: 'Query airport charts, SID/STAR, approach plates and other flight procedure charts worldwide. (Provided by ChartFox)',
-    placeholder: 'Enter ICAO / IATA Code',
+    placeholder: 'Enter ICAO Code',
     labels: {
       airport: 'Airport',
       charts: 'Available Charts',
