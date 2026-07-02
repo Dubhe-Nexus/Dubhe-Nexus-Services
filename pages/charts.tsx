@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Map, Search, ExternalLink, ChevronRight, Loader2, ZoomIn, ZoomOut, Fullscreen, Download } from 'lucide-react';
 import { useRouter } from 'next/router';
-import { AirportNav } from './AirportNav';
+import { AirportNav } from '../components/AirportNav';
 
 type Locale = 'zh' | 'en';
 type Provider = 'chartfox' | 'jeppesen';
@@ -541,7 +541,7 @@ export const ChartsView = ({ locale = 'zh' }: { locale?: Locale }) => {
                           <button
                             type="button"
                             onClick={() => setZoom(1)}
-                            className="px-2 text-[10px] font-medium text-gray-500 hover:text-black min-w-[3rem] text-center transition-colors"
+                            className="px-2 text-[10px] font-medium text-gray-500 hover:text-black min-w-12 text-center transition-colors"
                           >
                             {Math.round(zoom * 100)}%
                           </button>

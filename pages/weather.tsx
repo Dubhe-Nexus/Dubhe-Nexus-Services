@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Cloud, CloudSun, Search, Wind, Eye, Thermometer, Gauge, Clock, List } from 'lucide-react';
 import { useRouter } from 'next/router';
-import { AirportNav } from './AirportNav';
+import { AirportNav } from '../components/AirportNav';
 
 type Locale = 'zh' | 'en';
 
