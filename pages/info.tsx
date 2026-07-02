@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Info, Search, Clock } from 'lucide-react';
 import { useRouter } from 'next/router';
+import { AirportNav } from './AirportNav';
 
 type Locale = 'zh' | 'en';
 
@@ -134,7 +135,7 @@ export const InfoView = ({ locale = 'zh' }: { locale?: Locale }) => {
     }
   }, [msg.errors.invalid, msg.errors.notFound, msg.errors.requestFailed, msg.errors.serverError]);
 
-  const onSearch = async (e: React.FormEvent) => {
+  const onSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await runSearch(code);
   };
@@ -157,7 +158,7 @@ export const InfoView = ({ locale = 'zh' }: { locale?: Locale }) => {
   return (
     <main className="mx-auto max-w-[1600px] px-4 py-12 sm:px-6 lg:px-10 font-sans">
       <div className="relative overflow-hidden border border-gray-100 rounded-2xl bg-white mb-10">
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-50 to-white" />
+        <div className="absolute inset-0 bg-linear-to-b from-gray-50 to-white" />
         <div className="relative px-8 py-10 md:px-14">
           <div className="flex items-center gap-3 text-gray-500">
             <Info size={18} strokeWidth={1.5} />
@@ -214,33 +215,20 @@ export const InfoView = ({ locale = 'zh' }: { locale?: Locale }) => {
 
         {airport && !loading && (
           <div className="grid grid-cols-1 gap-6">
+            <AirportNav
+              locale={locale}
+              airport={{
+                name: airport?.name,
+                icaoId: airport?.icaoId,
+                iataId: airport?.iataId,
+                faaId: airport?.faaId,
+              }}
+              currentPage="info"
+            />
+
             <div className="border border-gray-100 rounded-2xl bg-white overflow-hidden">
               <div className="px-8 py-7 border-b border-gray-50">
-                <div className="text-[10px] tracking-widest uppercase text-gray-400 mb-3">{msg.labels.airport}</div>
-                <div className="text-2xl font-medium text-gray-900">{airport?.name || msg.text.none}</div>
-                <div className="mt-4 flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-100 bg-white text-xs text-gray-700">
-                    <span className="text-[10px] tracking-widest uppercase text-gray-400">ICAO</span>
-                    <span className="fira-code font-medium text-gray-900">{airport?.icaoId || msg.text.none}</span>
-                  </span>
-                  <span className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-100 bg-white text-xs text-gray-700">
-                    <span className="text-[10px] tracking-widest uppercase text-gray-400">IATA</span>
-                    <span className="fira-code font-medium text-gray-900">{airport?.iataId || msg.text.none}</span>
-                  </span>
-                  <span className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-100 bg-white text-xs text-gray-700">
-                    <span className="text-[10px] tracking-widest uppercase text-gray-400">FAA</span>
-                    <span className="fira-code font-medium text-gray-900">{airport?.faaId || msg.text.none}</span>
-                  </span>
-                  {airport?.icaoId && (
-                    <a
-                      href={`/charts?icao=${airport.icaoId}`}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black text-white hover:bg-gray-800 transition-colors text-xs font-medium"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 4 15 12 5 20 5 4"/></svg>
-                      {locale === 'en' ? 'Charts' : '航图'}
-                    </a>
-                  )}
-                </div>
+                <div className="text-[10px] tracking-widest uppercase text-gray-400 mb-3">{msg.labels.position}</div>
               </div>
 
               <div className="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

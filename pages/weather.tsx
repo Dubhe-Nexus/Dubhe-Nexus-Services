@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Cloud, CloudSun, Search, Wind, Eye, Thermometer, Gauge, Clock, List } from 'lucide-react';
 import { useRouter } from 'next/router';
+import { AirportNav } from './AirportNav';
 
 type Locale = 'zh' | 'en';
 
@@ -100,7 +101,7 @@ const formatUtc = (d: Date) => {
   return `${pad2(d.getUTCDate())}/${pad2(d.getUTCMonth() + 1)}/${d.getUTCFullYear()} UTC ${pad2(d.getUTCHours())}:${pad2(d.getUTCMinutes())}:${pad2(d.getUTCSeconds())}`;
 };
 
-const formatVisibility = (locale: Locale, value: any) => {
+const formatVisibility = (_locale: Locale, value: any) => {
   if (!value) return null;
   const raw = String(value).trim();
   if (!raw) return null;
@@ -372,7 +373,7 @@ export const WeatherView = ({ locale = 'zh' }: { locale?: Locale }) => {
     }
   }, [msg.errors.invalidIcao, msg.errors.metarNotFound, msg.errors.tafNotFound, msg.errors.serverError, msg.errors.metarFailed, msg.errors.tafFailed, msg.errors.requestFailed]);
 
-  const handleSearch = async (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await runSearch(icao);
   };
@@ -425,7 +426,7 @@ export const WeatherView = ({ locale = 'zh' }: { locale?: Locale }) => {
   return (
     <main className="mx-auto max-w-[1600px] px-4 py-12 sm:px-6 lg:px-10 font-sans">
         <div className="relative overflow-hidden border border-gray-100 rounded-2xl bg-white">
-          <div className="absolute inset-0 bg-gradient-to-b from-gray-50 to-white" />
+          <div className="absolute inset-0 bg-linear-to-b from-gray-50 to-white" />
           <div className="absolute -top-40 -right-40 h-[520px] w-[520px] rounded-full bg-gray-100 blur-3xl opacity-60" />
           <div className="relative px-8 py-14 md:px-14">
             <div className="flex items-center gap-3 text-gray-500">
@@ -478,21 +479,7 @@ export const WeatherView = ({ locale = 'zh' }: { locale?: Locale }) => {
               <span className="text-gray-700">{refreshedAtText || msg.text.none}</span>
             </div>
 
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-5 border border-gray-100 rounded-xl bg-white/60">
-                <div className="text-[10px] tracking-widest uppercase text-gray-400 mb-3">{msg.labels.airport}</div>
-                <div className="text-base md:text-lg font-medium text-gray-900">{airportTitle.name || msg.text.none}</div>
-                <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-100 bg-white/70 text-xs text-gray-700">
-                    <span className="text-[10px] tracking-widest uppercase text-gray-400">ICAO</span>
-                    <span className="fira-code font-medium text-gray-900">{airportTitle.icaoId || msg.text.none}</span>
-                  </span>
-                  <span className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-100 bg-white/70 text-xs text-gray-700">
-                    <span className="text-[10px] tracking-widest uppercase text-gray-400">IATA</span>
-                    <span className="fira-code font-medium text-gray-900">{airportTitle.iata || msg.text.none}</span>
-                  </span>
-                </div>
-              </div>
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-5 border border-gray-100 rounded-xl bg-white/60">
                 <div className="flex items-center gap-2 text-gray-400 mb-3">
                   <Clock size={16} strokeWidth={1.5} />
@@ -510,6 +497,20 @@ export const WeatherView = ({ locale = 'zh' }: { locale?: Locale }) => {
             </div>
           </div>
         </div>
+
+        {(metar || taf) && (
+          <div className="mt-10">
+            <AirportNav
+              locale={locale}
+              airport={{
+                name: airportTitle.name,
+                icaoId: airportTitle.icaoId,
+                iataId: airportTitle.iata,
+              }}
+              currentPage="weather"
+            />
+          </div>
+        )}
 
         {loading && (
           <div className="text-center py-14">
@@ -604,7 +605,7 @@ export const WeatherView = ({ locale = 'zh' }: { locale?: Locale }) => {
             <div className="p-7 md:p-10 grid grid-cols-1 gap-7">
               <div className="rounded-xl p-6 bg-gray-50 border border-gray-100">
                 <div className="text-[10px] tracking-widest uppercase text-gray-400 mb-4">{msg.labels.rawTaf}</div>
-                <pre className="fira-code text-base md:text-lg leading-relaxed whitespace-pre-wrap break-words overflow-x-hidden bg-white border border-gray-100 rounded-xl p-4 text-gray-900">{taf?.rawTAF || msg.text.none}</pre>
+                <pre className="fira-code text-base md:text-lg leading-relaxed whitespace-pre-wrap wrap-break-word overflow-x-hidden bg-white border border-gray-100 rounded-xl p-4 text-gray-900">{taf?.rawTAF || msg.text.none}</pre>
               </div>
 
               <div className="border border-gray-100 rounded-2xl overflow-hidden">

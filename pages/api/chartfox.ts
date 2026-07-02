@@ -1,3 +1,7 @@
+/**
+ * ChartFox 嵌入式航图接口代理
+ * 302 重定向到 ChartFox embed 接口，iframe 直接从 api.chartfox.org 加载
+ */
 export const runtime = 'edge';
 
 export default async function handler(req: Request): Promise<Response> {
