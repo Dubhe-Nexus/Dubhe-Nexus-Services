@@ -33,7 +33,7 @@ export default async function handler(req: Request): Promise<Response> {
     });
   }
 
-  const chartfoxUrl = `https://api.chartfox.org/v2/interfaces/airport/${airport}?token=${encodeURIComponent(token)}&darkMode=true`;
+  const chartfoxUrl = `https://api.chartfox.org/v2/interfaces/airport/${airport}?token=${encodeURIComponent(token)}&darkMode=false`;
 
   return Response.redirect(chartfoxUrl, 302);
 }

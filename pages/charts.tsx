@@ -50,23 +50,33 @@ export const ChartsView = ({ locale = 'zh' }: { locale?: Locale }) => {
   const msg = messages[locale];
   const [icao, setIcao] = useState('');
   const [activeCode, setActiveCode] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const autoLoadedCodeRef = useRef<string | null>(null);
 
   const embedUrl = activeCode ? `/api/charts?icao=${encodeURIComponent(activeCode)}` : null;
   const directUrl = activeCode ? `https://chartfox.org/${encodeURIComponent(activeCode)}` : null;
 
-  const runSearch = useCallback((rawCode: string) => {
+  const doSearch = useCallback((rawCode: string) => {
     const code = rawCode.trim().toUpperCase();
-    if (!code || (code.length !== 3 && code.length !== 4)) return;
-    setActiveCode(code);
+    if (code.length === 3 || code.length === 4) {
+      setActiveCode(code);
+    }
   }, []);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const code = icao.trim().toUpperCase();
-    if (!code || (code.length !== 3 && code.length !== 4)) return;
-    runSearch(code);
-  };
+  const handleSearch = useCallback(() => {
+    const val = inputRef.current?.value || '';
+    const code = val.trim().toUpperCase();
+    if (code.length === 3 || code.length === 4) {
+      doSearch(code);
+    }
+  }, [doSearch]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSearch();
+    }
+  }, [handleSearch]);
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -80,8 +90,8 @@ export const ChartsView = ({ locale = 'zh' }: { locale?: Locale }) => {
     setIcao(normalized);
     if (autoLoadedCodeRef.current === normalized) return;
     autoLoadedCodeRef.current = normalized;
-    runSearch(normalized);
-  }, [router.isReady, router.query, runSearch]);
+    doSearch(normalized);
+  }, [router.isReady, router.query, doSearch]);
 
   return (
     <main className="mx-auto max-w-[1600px] px-4 py-12 sm:px-6 lg:px-10 font-sans">
@@ -109,22 +119,25 @@ export const ChartsView = ({ locale = 'zh' }: { locale?: Locale }) => {
             </a>
           </div>
 
-          <form onSubmit={handleSearch} className="mt-10 relative">
+          <div className="mt-10 relative">
             <input
+              ref={inputRef}
               type="text"
               value={icao}
               onChange={(e) => setIcao(e.target.value.toUpperCase())}
+              onKeyDown={handleKeyDown}
               placeholder={msg.placeholder}
               maxLength={4}
               className="w-full px-7 py-5 bg-white border border-gray-200 rounded-xl text-lg font-medium focus:outline-none focus:border-black transition-all"
             />
             <button
-              type="submit"
+              type="button"
+              onClick={handleSearch}
               className="absolute right-3 top-3 px-5 py-4 bg-black text-white rounded-xl hover:bg-gray-800 transition-colors"
             >
               <Search size={20} />
             </button>
-          </form>
+          </div>
         </div>
       </div>
 
